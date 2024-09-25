@@ -6,21 +6,19 @@ namespace Mango.MessageBus
 {
     public class MessageBus: IMessageBus
     {
-        private readonly string? _connectionString;
         private readonly string _connectionStringAzure;
-        public MessageBus(string? connectString)
+        public MessageBus(string connectString)
         {
-            _connectionString = connectString;
+            _connectionStringAzure = connectString;
         }
 
         public MessageBus()
         {
-            _connectionString= Environment.GetEnvironmentVariable("SERVICE_BUS_CONN_STRING") ?? string.Empty;
+            _connectionStringAzure = Environment.GetEnvironmentVariable("SERVICE_BUS_CONN_STRING") ?? string.Empty;
         }
 
         public async Task PublishMessage(object message, string topicQueueName)
         {
-            //await using var client = new ServiceBusClient(_connectionString);
             await using var client = new ServiceBusClient(_connectionStringAzure);
 
             ServiceBusSender sender = client.CreateSender(topicQueueName);

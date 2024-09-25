@@ -14,7 +14,8 @@ internal class Program
 
         builder.Services.AddTransient(provider =>
         {
-            var azureConnectionString = builder.Configuration.GetConnectionString("AzureServiceBus");
+            // var azureConnectionString = builder.Configuration.GetConnectionString("AzureServiceBus");
+            var azureConnectionString = Environment.GetEnvironmentVariable("SERVICE_BUS_CONN_STRING", EnvironmentVariableTarget.User) ?? string.Empty;
             return new MessageBus(azureConnectionString);
         });
 

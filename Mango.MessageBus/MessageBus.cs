@@ -15,7 +15,7 @@ namespace Mango.MessageBus
 
         public MessageBus()
         {
-            _connectionString= Environment.GetEnvironmentVariable("ServiceBusConnectionString") ?? string.Empty;
+            _connectionString= Environment.GetEnvironmentVariable("SERVICE_BUS_CONN_STRING") ?? string.Empty;
         }
 
         public async Task PublishMessage(object message, string topicQueueName)

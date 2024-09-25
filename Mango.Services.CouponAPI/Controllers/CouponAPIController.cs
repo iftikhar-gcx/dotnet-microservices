@@ -31,10 +31,6 @@ namespace Mango.Services.CouponAPI.Controllers
             {
                 IEnumerable<Coupon> objList = _db.Coupons.ToList();
                 _response.Result = _mapper.Map<IEnumerable<CouponDTO>>(objList);
-                if (objList.Count() > 0)
-                {
-                    _response.isSuccess = true;
-                }
             }
             catch (Exception ex)
             {
@@ -102,10 +98,6 @@ namespace Mango.Services.CouponAPI.Controllers
 
 
                 _response.Result = _mapper.Map<CouponDTO>(obj);
-                if(obj.CouponId >= 0)
-                {
-                    _response.isSuccess = true;
-                }
             }
             catch (Exception ex)
             {

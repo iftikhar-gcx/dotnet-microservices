@@ -12,7 +12,7 @@
         public string? Phone { get; set; }
         public string? Email { get; set; }
 
-        public DateTime? OrderTime { get; set; } = DateTime.Now;
+        public DateTime OrderTime { get; set; } = DateTime.Now;
         public string? Status { get; set; } = string.Empty;
         public string? StripeSessionId { get; set; }
         public string? PaymentIntentId { get; set; }

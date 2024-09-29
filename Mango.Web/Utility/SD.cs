@@ -1,4 +1,6 @@
-﻿namespace Mango.Web.Utility
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Mango.Web.Utility
 {
     public class SD
     {
@@ -10,7 +12,9 @@
 
         public enum Roles
         {
+            [Display(Name = "Admin")]
             ADMIN,
+            [Display(Name = "Customer")]
             CUSTOMER
         };
 
@@ -25,11 +29,17 @@
 
         public enum OrderStatus
         {
+            [Display(Name ="Pending")]
             Status_Pending,
+            [Display(Name = "Approved")]
             Status_Approved,
+            [Display(Name = "Ready For PickUp")]
             Status_ReadyForPickUp,
+            [Display(Name = "Completed")]
             Status_Completed,
+            [Display(Name = "Refunded")]
             Status_Refunded,
+            [Display(Name = "Cancelled")]
             Status_Cancelled
         };
     }

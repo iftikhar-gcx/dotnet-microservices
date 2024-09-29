@@ -1,9 +1,74 @@
-﻿<div class="card shadow border-0 mt-4">
+﻿@{
+    var status = Context.Request.Query["status"].ToString();
+    if(string.IsNullOrEmpty(status))
+    {
+        status = "all";
+    }
+
+    Enum.TryParse(typeof(OrderStatus), char.ToUpper(status[0]) + status.Substring(1), true, out var orderStatus);
+
+    var approved = "";
+    var pending = "";
+    var readyForPickUp = "";
+    var completed = "";
+    var refunded = "";
+    var cancelled = "";
+    var allTxns = "";
+
+    switch (orderStatus)
+    {
+        case OrderStatus.Status_Pending:
+            pending = "active text-white bg-secondary";
+            break;
+        case OrderStatus.Status_Approved:
+            approved = "active text-white bg-secondary";
+            break;
+        case OrderStatus.Status_ReadyForPickUp:
+            readyForPickUp = "active text-white bg-secondary";
+            break;
+        case OrderStatus.Status_Completed:
+            completed = "active text-white bg-secondary";
+            break;
+        case OrderStatus.Status_Refunded:
+            refunded = "active text-white bg-secondary";
+            break;
+        case OrderStatus.Status_Cancelled:
+            cancelled = "active text-white bg-secondary";
+            break;
+        default:
+            allTxns = "active text-white bg-secondary";
+            break;
+    }
+}
+
+
+@using static Mango.Web.Utility.SD
+<div class="card shadow border-0 mt-4">
 
     <div class="card-header bg-secondary bg-gradient m-lg-0 py-3 d-flex justify-content-between">
         <div class="row">
             <h1 class="text-white">Order List</h1>
         </div>
+        <ul class="list-group list-group-horizontal-sm pt-2">
+            <a style="text-decoration:none" asp-controller="Order" asp-action="OrderIndex" asp-route-status="@OrderStatus.Status_Approved.ToString().ToLower()">
+                <li class="list-group-item @approved">Approved</li>
+            </a>
+            <a style="text-decoration:none" asp-controller="Order" asp-action="OrderIndex" asp-route-status="@OrderStatus.Status_ReadyForPickUp.ToString().ToLower()">
+                <li class="list-group-item @readyForPickUp">Ready For PickUp</li>
+            </a>
+            <a style="text-decoration:none" asp-controller="Order" asp-action="OrderIndex" asp-route-status="@OrderStatus.Status_Completed.ToString().ToLower()">
+                <li class="list-group-item @completed">Completed</li>
+            </a>
+            <a style="text-decoration:none" asp-controller="Order" asp-action="OrderIndex" asp-route-status="@OrderStatus.Status_Refunded.ToString().ToLower()">
+                <li class="list-group-item @refunded">Refunded</li>
+            </a>
+            <a style="text-decoration:none" asp-controller="Order" asp-action="OrderIndex" asp-route-status="@OrderStatus.Status_Cancelled.ToString().ToLower()">
+                <li class="list-group-item @cancelled">Cancelled</li>
+            </a>
+            <a style="text-decoration:none" asp-controller="Order" asp-action="OrderIndex" asp-route-status="all">
+                <li class="list-group-item @allTxns">All Orders</li>
+            </a>
+        </ul>
     </div>
     <div class="card-body p-4">
         <table id="tblData" class="table table-bordered table-striped pt-3" style="width:100%">

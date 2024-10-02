@@ -1,6 +1,7 @@
 ﻿using Mango.Web.Models;
 using Mango.Web.Service.IService;
 using Mango.Web.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
@@ -17,15 +18,17 @@ namespace Mango.Web.Controllers
             _orderService = orderService;
         }
 
+        [Authorize]
         public IActionResult OrderIndex()
         {
             return View();
         }
 
+        [Authorize]
         public async Task<IActionResult> OrderDetail(int orderId)
         {
             OrderHeaderDTO orderHeaderDTO = new OrderHeaderDTO();
-            string userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault().Value;
+            string userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
 
             var response = await _orderService.GetOrder(orderId);
             if (response != null && response.isSuccess)
@@ -47,7 +50,7 @@ namespace Mango.Web.Controllers
             IEnumerable<OrderHeaderDTO> ordersData;
             string userId = string.Empty;
 
-            if(!User.IsInRole(SD.Roles.ADMIN.ToString()))
+            if (!User.IsInRole(SD.Roles.ADMIN.ToString()))
             {
                 userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value ?? string.Empty;
             }
@@ -55,10 +58,9 @@ namespace Mango.Web.Controllers
             ResponseDTO responseDTO = _orderService.GetAllOrders(userId).GetAwaiter().GetResult() ?? new() { };
             if(responseDTO != null && responseDTO.isSuccess)
             {
-                ordersData = JsonConvert.DeserializeObject<IEnumerable<OrderHeaderDTO>>(responseDTO.Result.ToString()) ?? new List<OrderHeaderDTO>();
+                ordersData = JsonConvert.DeserializeObject<List<OrderHeaderDTO>>(responseDTO.Result.ToString()) ?? new List<OrderHeaderDTO>();
 
-                OrderStatus orderStatus;
-                Enum.TryParse(status, out orderStatus);
+                Enum.TryParse(typeof(OrderStatus), char.ToUpper(status[0]) + status.Substring(1), true, out var orderStatus);
 
                 switch (orderStatus)
                 {
@@ -89,7 +91,8 @@ namespace Mango.Web.Controllers
                 ordersData = new List<OrderHeaderDTO>();
             }
 
-			return Json(new { data = ordersData });
+            return Json(new { data = ordersData.OrderByDescending(u=>u.OrderHeaderId) });
+
 		}
 
         [HttpPost]

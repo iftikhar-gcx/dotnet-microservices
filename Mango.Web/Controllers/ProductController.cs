@@ -37,7 +37,6 @@ namespace Mango.Web.Controllers
             return View(list);
         }
 
-        [HttpGet]
         public async Task<IActionResult> ProductCreate()
         {
             return View();
@@ -127,19 +126,21 @@ namespace Mango.Web.Controllers
 		[HttpPost]
 		public async Task<IActionResult> ProductEdit(ProductDTO productDTO)
 		{
-			ResponseDTO? response = await _productService.UpdateProductAsync(productDTO);
+            if (ModelState.IsValid)
+            {
+                ResponseDTO? response = await _productService.UpdateProductAsync(productDTO);
 
-			if (response != null && response.isSuccess)
-			{
-				TempData["success"] = "Product updated successfully!";
-
-				return RedirectToAction(nameof(ProductIndex));
-			}
-			else
-			{
-				TempData["error"] = response?.Message;
-			}
-			return View(productDTO);
+                if (response != null && response.isSuccess)
+                {
+                    TempData["success"] = "Product updated successfully";
+                    return RedirectToAction(nameof(ProductIndex));
+                }
+                else
+                {
+                    TempData["error"] = response?.Message;
+                }
+            }
+            return View(productDTO);
 		}
 	}
 }

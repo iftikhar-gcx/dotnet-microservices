@@ -3,12 +3,10 @@ using Mango.Web.Service.IService;
 using Mango.Web.Utility;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq.Expressions;
 using System.Security.Claims;
 
 namespace Mango.Web.Controllers
@@ -37,24 +35,18 @@ namespace Mango.Web.Controllers
 
             if (responseDTO != null && responseDTO.isSuccess)
             {
-                LoginResponseDTO response = JsonConvert.DeserializeObject<LoginResponseDTO>(Convert.ToString(responseDTO.Result));
+                LoginResponseDTO loginResponseDTO = JsonConvert.DeserializeObject<LoginResponseDTO>(Convert.ToString(responseDTO.Result));
                 
-                await SignInUser(response);
-
-                _tokenProvider.SetToken(response.Token);
-
-                TempData["success"] = "Login Successful";
-
+                await SignInUser(loginResponseDTO);
+                _tokenProvider.SetToken(loginResponseDTO.Token);
                 return RedirectToAction("Index", "Home");
             }
-
-            TempData["error"] = responseDTO.Message;
-
-            ModelState.AddModelError("CustomError", responseDTO.Message);
-            return View(loginRequestDTO);
+            else
+            {
+                TempData["error"] = responseDTO.Message;
+                return View(loginRequestDTO);
+            }
         }
-
-
 
         private List<SelectListItem> GetRolesList()
         {
@@ -86,9 +78,8 @@ namespace Mango.Web.Controllers
                 {
                     registrationRequestDTO.Role = SD.Roles.CUSTOMER.ToString();
                 }
-
                 assignRole = await _authService.AssignRoleAsync(registrationRequestDTO);
-                if (assignRole != null)
+                if (assignRole!=null && assignRole.isSuccess)
                 {
                     TempData["success"] = "Registration Successful";
                     return RedirectToAction(nameof(Login));

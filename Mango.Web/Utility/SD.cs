@@ -42,5 +42,11 @@ namespace Mango.Web.Utility
             [Display(Name = "Cancelled")]
             Status_Cancelled
         };
+
+        public enum ContentType
+        {
+            Json,
+            MultipartFormData
+        }
     }
 }

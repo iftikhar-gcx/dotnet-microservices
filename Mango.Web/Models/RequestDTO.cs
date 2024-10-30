@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Security.Cryptography.Xml;
-using static Mango.Web.Utility.SD;
+﻿using static Mango.Web.Utility.SD;
 
 namespace Mango.Web.Models
 {
@@ -10,5 +8,6 @@ namespace Mango.Web.Models
         public string Url { get; set; } = string.Empty;
         public object Data { get; set; } = new object();
         public string AccessToken { get; set; } = string.Empty;
+        public ContentType ContentType { get; set; } = ContentType.Json;
     }
 }

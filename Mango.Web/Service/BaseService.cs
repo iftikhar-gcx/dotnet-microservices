@@ -1,6 +1,5 @@
 ﻿using Mango.Web.Models;
 using Mango.Web.Service.IService;
-using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net;
 using System.Text;
@@ -32,8 +31,16 @@ namespace Mango.Web.Service
 
                 // 02. Add request message and headers
                 HttpRequestMessage message = new();
-                message.Headers.Add("Accept", "application/json");
                 // ToDo: Add authentication header
+                if (requestDTO.ContentType == Utility.SD.ContentType.Json)
+                {
+                    message.Headers.Add("Accept", "application/json");
+                }
+                else
+                {
+                    message.Headers.Add("Accept", "*/*");
+                }
+
                 if (withBeater)
                 {
                     var token = _tokenProvider.GetToken();
@@ -44,9 +51,34 @@ namespace Mango.Web.Service
                 message.RequestUri = new Uri(requestDTO.Url);
 
                 // 04. Serialize Data and Add it to request message
-                if (requestDTO.Data != null)
+                if (requestDTO.ContentType == Utility.SD.ContentType.MultipartFormData)
                 {
-                    message.Content = new StringContent(JsonConvert.SerializeObject(requestDTO.Data), Encoding.UTF8, "application/json");
+                    var content = new MultipartFormDataContent();
+                    foreach (var formData in requestDTO.Data.GetType().GetProperties())
+                    {
+                        var value = formData.GetValue(requestDTO.Data);
+                        if (value is FormFile)
+                        {
+                            var file = (FormFile)value;
+                            if (file != null)
+                            {
+                                content.Add(new StreamContent(file.OpenReadStream()), formData.Name, file.FileName);
+                            }
+                        }
+                        else
+                        {
+                            content.Add(new StringContent(value == null ? "" : value.ToString()), formData.Name);
+                        }
+                    }
+
+                    message.Content = content;
+                }
+                else
+                {
+                    if (requestDTO.Data != null)
+                    {
+                        message.Content = new StringContent(JsonConvert.SerializeObject(requestDTO.Data), Encoding.UTF8, "application/json");
+                    }
                 }
 
                 // 05. Request part is done. Now, start handling the response

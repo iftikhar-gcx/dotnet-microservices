@@ -36,7 +36,7 @@ namespace Mango.Services.OrderAPI.Controllers
         }
 
         [Authorize]
-        [HttpGet("get-orders")]
+        [HttpGet("get-orders/{userId?}")]
         public ResponseDTO? Get(string? userId)
         {
             try

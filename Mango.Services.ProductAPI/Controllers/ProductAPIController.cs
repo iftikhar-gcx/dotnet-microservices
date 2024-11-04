@@ -5,6 +5,7 @@ using Mango.Services.ProductAPI.Models.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Principal;
 
 namespace Mango.Services.ProductAPI.Controllers
 {
@@ -175,19 +176,28 @@ namespace Mango.Services.ProductAPI.Controllers
             {
                 Product product = _appDbContext.Products.First(u => u.ProductId == id);
 
-                if(!string.IsNullOrEmpty(product.ImageLocalPath))
+                if (product != null && id > 0)
                 {
-                    var oldFilePathDirectory = Path.Combine(Directory.GetCurrentDirectory(), product.ImageLocalPath);
-                    FileInfo file = new FileInfo(oldFilePathDirectory);
 
-                    if(file.Exists)
+                    if (!string.IsNullOrEmpty(product.ImageLocalPath))
                     {
-                        file.Delete();
-                    }
-                }
+                        var oldFilePathDirectory = Path.Combine(Directory.GetCurrentDirectory(), product.ImageLocalPath);
+                        FileInfo file = new FileInfo(oldFilePathDirectory);
 
-                _appDbContext.Products.Remove(product);
-                _appDbContext.SaveChanges();
+                        if (file.Exists)
+                        {
+                            file.Delete();
+                        }
+                    }
+
+                    _appDbContext.Products.Remove(product);
+                    _appDbContext.SaveChanges();
+                }
+                else
+                {
+                    _response.isSuccess = false;
+                    _response.Message = "Delete operation failed...";
+                }
             }
             catch (Exception ex)
             {

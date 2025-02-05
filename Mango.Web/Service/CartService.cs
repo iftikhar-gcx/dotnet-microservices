@@ -14,7 +14,7 @@ namespace Mango.Web.Service
             _baseService = baseService;
         }
 
-        public async Task<ResponseDTO?> GetCardByIdAsync(string userId)
+        public async Task<ResponseDTO?> GetCartByIdAsync(string userId)
         {
             return await _baseService.SendAsync(new RequestDTO()
             {

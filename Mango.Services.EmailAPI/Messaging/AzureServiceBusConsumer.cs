@@ -15,7 +15,6 @@ namespace Mango.Services.EmailAPI.Messaging
         private readonly string _emailCartQueue;
         private readonly string _registerUserQueue;
         private readonly IConfiguration _configuration;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly EmailService _emailService;
 
         private readonly string _orderCreatedTopic;
@@ -134,8 +133,13 @@ namespace Mango.Services.EmailAPI.Messaging
 
             try
             {
-                var user = _httpContextAccessor.HttpContext?.User;
-                rewardsMessage.UserEmail = user.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Email)?.FirstOrDefault()?.Value;
+                // HttpContext is not available.
+                //var user = _httpContextAccessor.HttpContext?.User;
+                //rewardsMessage.UserEmail = user.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Email)?.FirstOrDefault()?.Value;
+
+                // ToDo: Get User Email.
+
+
 
 
                 await _emailService.LogOrderPlaced(rewardsMessage);

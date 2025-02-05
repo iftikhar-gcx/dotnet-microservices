@@ -21,9 +21,8 @@ namespace Mango.Services.RewardAPI.Messaging
             _rewardsService = rewardsService;
             _configuration = configuration;
 
-            // _serviceBusConnectonString = _configuration.GetValue<string>("ServiceBusConnectionString") ?? string.Empty;
-
-            _serviceBusConnectonString = _configuration["ServiceBusConnectionString"] ?? string.Empty;
+            //_serviceBusConnectonString = _configuration["ServiceBusConnectionString"] ?? string.Empty;
+            _serviceBusConnectonString = Environment.GetEnvironmentVariable("SERVICE_BUS_CONN_STRING", EnvironmentVariableTarget.User) ?? string.Empty;
 
             _orderCreatedTopic = _configuration.GetValue<string>("TopicAndQueueNames:OrderCreatedTopic") ?? string.Empty;
             _orderCreatedRewardsSubscription = _configuration.GetValue<string>("TopicAndQueueNames:OrderCreatedRewardsSubscription") ?? string.Empty;
